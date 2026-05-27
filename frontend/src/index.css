@@ -1,29 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500;700&display=swap');
+
+:root {
+  /* LIGHT MODE (60s Soft Beige Gradient) */
+  --bg-gradient: linear-gradient(135deg, #FAFAF8 0%, #E6DFD3 100%);
+  --text-color: #4A453E;
+  --nav-text: #2A2520;
+}
+
+[data-theme="dark"] {
+  /* DARK MODE (Deep Charcoal to Near-Black Gradient) */
+  --bg-gradient: linear-gradient(135deg, #1A1A24 0%, #0A0A0A 100%);
+  --text-color: #E0E0E0;
+  --nav-text: #E0E7FF;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-}
+* { margin: 0; padding: 0; }
 
 body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  background-color: #FAFAF8; 
-  color: #4A453E;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-color);
   font-family: system-ui, -apple-system, sans-serif;
-}
-
-img, picture, video, canvas, svg {
-  display: block;
-  max-width: 100%;
-}
-
-input, button, textarea, select {
-  font: inherit;
-}
-
-p, h1, h2, h3, h4, h5, h6 {
-  overflow-wrap: break-word;
+  transition: background 0.5s ease, color 0.5s ease;
 }
