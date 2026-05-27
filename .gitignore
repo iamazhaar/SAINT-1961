@@ -1,0 +1,25 @@
+# =========================
+# Environment / Secret Files
+# =========================
+.env
+.env.*
+
+# =========================
+# Python Backend
+# =========================
+__pycache__/
+*.pyc
+.venv/
+.python-version
+
+# =========================
+# React / Node Frontend
+# =========================
+node_modules/
+dist/
+
+# =========================
+# OS / Editor Files
+# =========================
+.DS_Store
+.vscode/
