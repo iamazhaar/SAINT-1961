@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from app.services.parser import string_to_saint_tree, inspect_structure
 
 # Initialize the router. We add a prefix so all routes in this file start with /api
 router = APIRouter(
@@ -12,26 +13,19 @@ class IntegrationRequest(BaseModel):
     expression: str
 
 @router.post("/integrate")
-async def perform_integration(payload: IntegrationRequest):
-    user_input = payload.expression.strip()
-    
-    if not user_input:
-        raise HTTPException(status_code=400, detail="Mathematical expression cannot be empty.")
+async def integrate_expression(payload: IntegrationRequest):
+    try:
+        # Step 1: Parse string to internal expression structure
+        parsed_tree = string_to_saint_tree(payload.expression)
         
-    # Tracer Bullet Strategy: Mocking responses to match the screenshot example
-    # This allows you to build the frontend interface completely before finishing the math parser
-    if "x^2" in user_input and "sin" in user_input:
-        mock_result = "-x^2 * cos(x) + 2*x * sin(x) + 2 * cos(x) + C"
-    elif "x^2" in user_input:
-        mock_result = "(1/3) * x^3 + C"
-    elif "sin" in user_input:
-        mock_result = "-cos(x) + C"
-    else:
-        mock_result = f"∫({user_input})dx ➔ [SAINT Heuristic Solver Template Ready]"
+        # Print structural breakdown to your backend terminal terminal for debugging
+        print(f"\n[SAINT] Received Raw Text: {payload.expression}")
+        print(f"[SAINT] Internal Structural Tree: {inspect_structure(parsed_tree)}")
         
-    return {
-        "status": "success",
-        "input_expression": user_input,
-        "integrated_result": mock_result,
-        "engine": "SAINT-1961-Core"
-    }
+        # Placeholder for Step 2/3/4 - right now returning the parsed math back
+        return {"integrated_result": f"Parsed successfully as structural tree: {str(parsed_tree)}"}
+        
+    except ValueError as val_err:
+        raise HTTPException(status_code=400, detail=str(val_err))
+    except Exception:
+        raise HTTPException(status_code=500, detail="Internal processing fault inside SAINT core.")
