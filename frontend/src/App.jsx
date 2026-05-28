@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "./components/Navbar";
+import IntegrationTerminal from './components/IntegrationTerminal';
 import "./App.css";
 
 function App() {
@@ -19,6 +20,9 @@ function App() {
   return (
     <div className="app-container">
       <Navbar theme={theme} toggleTheme={toggleTheme} />
+      <div className="app-layout-wrapper">
+        <IntegrationTerminal />
+      </div>
     </div>
   );
 }
