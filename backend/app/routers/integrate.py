@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from app.services.parser import string_to_saint_tree, inspect_structure
-from app.services.matcher import match_standard_form
+from app.services.simplifier import integrate_linear_expression
 
 # Initialize the router. We add a prefix so all routes in this file start with /api
 router = APIRouter(
@@ -26,22 +26,20 @@ async def integrate_expression(payload: IntegrationRequest):
         # ======================================================================
         
 
-        # Step 2: Attempt Immediate Standard Form Match
-        integrated_expr = match_standard_form(parsed_tree)
+        # Step 3: Pass the tree into the Linear Simplifier (which calls the Matcher automatically [Step 2])
+        integrated_expr = integrate_linear_expression(parsed_tree)
 
         if integrated_expr is not None:
-            # Successfully hit a standard form! Convert back to string for the frontend.
             return {
                 "status": "success",
-                "engine": "Standard Form Matcher",
+                "engine": "Linear Simplifier & Standard Forms",
                 "integrated_result": str(integrated_expr)
             }
         
-        # If we reach here, it failed Step 2 and needs Heuristics (Step 3/4)
         return {
             "status": "pending",
             "engine": "Heuristic Goal Tree [Awaiting Implementation]",
-            "integrated_result": f"Could not immediately integrate: {parsed_tree}"
+            "integrated_result": f"Requires heuristic methods to solve: {parsed_tree}"
         }
         
     except ValueError as val_err:
