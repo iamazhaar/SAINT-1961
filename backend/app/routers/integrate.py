@@ -1,33 +1,23 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from app.services.parser import string_to_saint_tree, inspect_structure
+from app.schemas.integrate import IntegrateRequest
+from app.services.parser import parse_infix_expression
 from app.services.simplifier import integrate_linear_expression
 
-# Initialize the router. We add a prefix so all routes in this file start with /api
+
+
 router = APIRouter(
     prefix="/api",
     tags=["Integration Engine"]
 )
 
-# Define the structured data contract the frontend must follow
-class IntegrationRequest(BaseModel):
-    expression: str
-
 @router.post("/integrate")
-async def integrate_expression(payload: IntegrationRequest):
+async def integrate_expression(payload: IntegrateRequest):
     try:
-        # Step 1: Parse string to internal expression structure
-        parsed_tree = string_to_saint_tree(payload.expression)
+        ## STEP 1: EXPRESSION TREE CONSTRUCTION ##
+        parsed_expression_tree = parse_infix_expression(payload.expression)
         
-        # ======== For Testing Purpose ==============
-        # Print structural breakdown to your backend terminal terminal for debugging
-        print(f"\n[SAINT] Received Raw Text: {payload.expression}")
-        print(f"[SAINT] Internal Structural Tree: {inspect_structure(parsed_tree)}")
-        # ======================================================================
-        
-
-        # Step 3: Pass the tree into the Linear Simplifier (which calls the Matcher automatically [Step 2])
-        integrated_expr = integrate_linear_expression(parsed_tree)
+        ## STEP 2,3: LINEARITY & STANDARD FORM MATCHER ##
+        integrated_expr = integrate_linear_expression(parsed_expression_tree)
 
         if integrated_expr is not None:
             return {
@@ -39,7 +29,7 @@ async def integrate_expression(payload: IntegrationRequest):
         return {
             "status": "pending",
             "engine": "Heuristic Goal Tree [Awaiting Implementation]",
-            "integrated_result": f"Requires heuristic methods to solve: {parsed_tree}"
+            "integrated_result": f"Requires heuristic methods to solve: {parsed_expression_tree}"
         }
         
     except ValueError as val_err:
